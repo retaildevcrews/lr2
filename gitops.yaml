@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{gitops.Name}}
+  namespace: {{gitops.Namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{gitops.Name}}
+  template:
+    metadata:
+      labels:
+        app: {{gitops.Name}}
+    spec:
+      containers:
+        - name: app
+          image: {{gitops.Imagename}}:{{gitops.Imagetag}}
+          imagePullPolicy: Always
+
+          args: 
+          - -l
+          - "1000"
+          - -r
+          - -s
+          - http://ngsa-memory:8080
+          - -f
+          - benchmark.json
+          - --prometheus
+          - -z
+          - {{gitops.Config.Zone}}
+          - -r
+          - {{gitops.Config.Region}}
+
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{gitops.Name}}
+  namespace: {{gitops.Namespace}}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{gitops.Name}}

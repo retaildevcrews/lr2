@@ -1,0 +1,43 @@
+name: Deploy LodeRunner
+
+on:
+  push:
+    branches:
+      - main
+
+    paths:
+    - 'gitops.*'
+    - 'Dockerfile'
+    - '*.csproj'
+    - '**.cs'
+    - '.github/workflows/ngsa.yaml'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-20.04
+    env:
+      DOCKER_REPO: ghcr.io/retaildevcrews/ngsa-lr
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Login to Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.GHCR_ID }}
+        password: ${{ secrets.GHCR_PAT }}
+
+    - name: Generate Deployment(s)
+      run: |
+        git config --global user.email "bartr@microsoft.com"
+        git config --global user.name bartr
+        git clone https://${{ secrets.GHCR_ID }}:${{ secrets.GHCR_PAT }}@github.com/retaildevcrews/bartr-test gitops
+        cd gitops
+        date >> runlog
+        dotnet run
+        git add .
+        git commit -am "gitops"
+        git push
