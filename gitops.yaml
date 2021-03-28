@@ -20,12 +20,12 @@ spec:
           imagePullPolicy: Always
 
           args: 
-          - -l
+          - --sleep
           - "1000"
-          - -r
-          - -s
+          - --run-loop
+          - --server
           - http://ngsa-memory:8080
-          - -f
+          - --files
           - benchmark.json
           - --prometheus
           - --zone
