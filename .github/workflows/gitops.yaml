@@ -6,7 +6,7 @@ on:
       - main
 
     paths:
-    - 'gitops.*'
+    - gitops.*
     - '.github/workflows/gitops.yaml'
 
 jobs:
@@ -31,11 +31,11 @@ jobs:
       run: |
         git config --global user.email "bartr@microsoft.com"
         git config --global user.name bartr
-        git clone https://${{ secrets.GHCR_ID }}:${{ secrets.GHCR_PAT }}@github.com/retaildevcrews/bartr-test gitops
+        git clone https://${{ secrets.GHCR_ID }}:${{ secrets.GHCR_PAT }}@github.com/retaildevcrews/gitops
         cd gitops
         date >> runlog
         dotnet run
         git pull
         git add .
-        git commit -am "gitops"
+        git commit -am "gitops LodeRunner deployment"
         git push
