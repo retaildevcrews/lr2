@@ -3,5 +3,5 @@
     "namespace": "ngsa",
     "imageName": "ghcr.io/retaildevcrews/ngsa-lr",
     "imageTag": "beta",
-    "targets": ["azure", "do", "gcp"]
+    "targets": ["azure", "do"]
 }
