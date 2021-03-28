@@ -1,22 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{gitops.Name}}
-  namespace: {{gitops.Namespace}}
+  name: {{gitops.name}}
+  namespace: {{gitops.namespace}}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{gitops.Name}}
+      app: {{gitops.name}}
   template:
     metadata:
       labels:
-        app: {{gitops.Name}}
-        version: beta-{{gitops.Version}}
+        app: {{gitops.name}}
+        version: beta-{{gitops.version}}
+        deploy: {{gitops.deploy}}
     spec:
       containers:
         - name: app
-          image: {{gitops.Imagename}}:{{gitops.Imagetag}}
+          image: {{gitops.imageName}}:{{gitops.imageTag}}
           imagePullPolicy: Always
 
           args: 
@@ -29,9 +30,9 @@ spec:
           - benchmark.json
           - --prometheus
           - --zone
-          - {{gitops.Config.Zone}}
+          - {{gitops.config.zone}}
           - --region
-          - {{gitops.Config.Region}}
+          - {{gitops.config.region}}
 
           ports:
             - name: http
@@ -43,8 +44,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{gitops.Name}}
-  namespace: {{gitops.Namespace}}
+  name: {{gitops.name}}
+  namespace: {{gitops.namespace}}
 spec:
   type: ClusterIP
   ports:
@@ -53,22 +54,22 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: {{gitops.Name}}
+    app: {{gitops.name}}
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{gitops.Name}}-np
-  namespace: {{gitops.Namespace}}
+  name: {{gitops.name}}-np
+  namespace: {{gitops.namespace}}
   labels:
-    app: {{gitops.Name}}
+    app: {{gitops.name}}
 
 spec:
   type: NodePort
   selector:
-    app: {{gitops.Name}}
+    app: {{gitops.name}}
   ports:
     - port: 8080
       targetPort: 8080
