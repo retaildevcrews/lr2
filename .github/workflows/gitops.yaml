@@ -11,11 +11,11 @@ on:
 
 jobs:
 
-  build:
+  deploy:
 
     runs-on: ubuntu-20.04
     env:
-      DOCKER_REPO: ghcr.io/retaildevcrews/ngsa-lr
+      DOCKER_REPO: ghcr.io/retaildevcrews/tinybench
 
     steps:
     - uses: actions/checkout@v2
@@ -27,33 +27,13 @@ jobs:
         username: ${{ secrets.GHCR_ID }}
         password: ${{ secrets.GHCR_PAT }}
 
-    - name: Generate Deployment(s)
+    - name: Docker pull
+      run: docker pull ghcr.io/retaildevcrews/autogitops:beta
+
+    - name: GitOps Deploy
       run: |
-        git config --global user.email "bartr@microsoft.com"
-        git config --global user.name bartr
-        git clone https://${{ secrets.GHCR_ID }}:${{ secrets.GHCR_PAT }}@github.com/retaildevcrews/gitops
-        cd gitops
-        dotnet run -p src
-        git pull
-
-    - name: git status
-      run: |
-        cd gitops
-        git status
-
-    - name: git diff
-      run: |
-        cd gitops
-        git diff
-
-    - name: git push
-      run: |
-        cd gitops
-        git pull
-
-        if [[ $(git status -s) ]]; then
-          git add .
-          git commit -am "gitops LodeRunner deployment"
-          git push
-        fi
-
+        docker run --rm \
+        -v $PWD:/template ghcr.io/retaildevcrews/autogitops:beta \
+        ${{ secrets.GHCR_ID }} \
+        ${{ secrets.GHCR_PAT }} \
+        /retaildevcrews/gitops
